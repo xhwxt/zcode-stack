@@ -21,7 +21,7 @@ cd mobile/android
 
 ### 签名
 
-`keystore/zcode-release.keystore`（项目内，密码见本地密码管理（不入仓）——个人分发用自签证书，所有已发布版本同一指纹，可互相覆盖安装。**勘误**：发布实际使用 `<Android 构建工具目录>/zcode-release.keystore`（与早期已发布版本同一指纹同源）；项目内这把是早期另生成的（指纹不同），与发布件不同源，仅留档勿用于发布）。发布流程：`assembleRelease` → `zipalign -f -p 4` → `apksigner sign --ks <Android 构建工具目录>/zcode-release.keystore`。发布产物与源码逐字节可复现（已验证）。
+发布用自签 keystore 不入仓，密码也不入仓。发布流程：`assembleRelease` → `zipalign -f -p 4` → `apksigner sign --ks <发布用 keystore>`。使用同一签名密钥的版本可互相覆盖安装。
 
 ### 构建环境
 
