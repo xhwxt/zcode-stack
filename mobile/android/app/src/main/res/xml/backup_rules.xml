@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Auto-backup rules for Android 9/10 (API 29/30). API 31+ uses data_extraction_rules.xml. -->
+<full-backup-content>
+    <exclude
+        domain="file"
+        path="connections.enc" />
+    <exclude
+        domain="file"
+        path="devices.json" />
+</full-backup-content>

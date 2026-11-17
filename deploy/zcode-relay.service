@@ -1,0 +1,37 @@
+[Unit]
+Description=ZCode Remote-Control Relay (self-implemented, official protocol)
+After=network.target zcode-web.service
+Requires=zcode-web.service
+
+[Service]
+Type=simple
+Environment=PATH=<Node 安装目录>/bin:/usr/local/bin:/usr/bin:/bin
+Environment=ZCODE_RELAY_PORT=3032
+Environment=ZCODE_BRIDGE_PUBLIC_WS=wss://<部署域名>/ws
+Environment=ZCODE_HOST_ORIGIN=http://127.0.0.1:3030
+# 路径全部来自环境变量（发布版 relay 源码内不写死安装路径，见 patches/relay/README.md）
+Environment=ZCODE_DATA_BASE_DIR=<数据目录>
+Environment=ZCODE_REMOTE_MIRROR=<镜像目录>
+# ---------- 密钥管理 ----------
+# 密钥类变量从 Environment= 改为 EnvironmentFile=（600 root:root）。
+# 原因：Environment= 的值会被 `systemctl show -p Environment` 对任何本地用户完整打印。
+# ---------- 去 token 化（v29 一次性门票）----------
+# EnvironmentFile 里各变量的现役/退役状态：
+#   ZCODE_RELAY_LOCAL_SESSION = relay 系统设备的 deviceToken（部署脚本 §2b 经 admin-cli.sh
+#     生成，label=relay-system，/devices 页可见可撤销）——collectBootstrap 凭它 renew 出
+#     会话调 /api/server-info。v29 必需；缺失时 relay 仍可跑，server-info 宣告降级为空。
+#   ZCODE_REMOTE_TOKEN = 旧单 token，过渡期保留：仅作 /web-remote?remoteControlToken=
+#     <旧token> 兼容入口（命中记 "legacy token entry"），不再是唯一门票。
+#   ZCODE_SERVER_TOKEN = 已退役（3030 不再认 query token；保留变量名仅为 env 文件兼容）。
+# 回滚：cp 备份的 zcode-relay.env.bak 回来 + ExecStart 指回 relay-v28.mjs（部署脚本 §5 自动做）。
+EnvironmentFile=<配置目录>/zcode-relay.env
+# 该服务新建的文件默认 600（relay.log 等）。
+UMask=0077
+ExecStart=<Node 安装目录>/bin/node <repo>/relay/relay-v29.mjs
+Restart=always
+RestartSec=3
+StandardOutput=append:<数据目录>/relay.log
+StandardError=append:<数据目录>/relay.log
+
+[Install]
+WantedBy=multi-user.target

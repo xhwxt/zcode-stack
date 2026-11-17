@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/web_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- No native top bar: the ZCode page is the whole UI, same as dsh-mobile.
+         Root is a FrameLayout (like dsh-mobile's browser root) so the insets
+         listener can assign FrameLayout.LayoutParams without a cast surprise.
+         Background and the status-bar backdrop strip are painted in code. -->
+    <FrameLayout
+        android:id="@+id/web_slot"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

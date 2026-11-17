@@ -1,0 +1,37 @@
+[Unit]
+Description=ZCode Web (self-hosted, source build v3.14.3)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=<部署目录>
+Environment=HOME=/root
+Environment=PATH=<Node 安装目录>/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Environment=ZCODE_DATA_BASE_DIR=<数据目录>
+Environment=PORT=3030
+Environment=ZCODE_DYNAMIC_WORKFLOW_MODE=alwaysOn
+# ---------- 凭据与密钥管理 ----------
+# 任何密钥都不放 Environment=（值会被 `systemctl show -p Environment` 对任何本地用户完整打印）。
+EnvironmentFile=<配置目录>/zcode-web.env
+# 设备凭据 + 短期会话鉴权模型（mobile/handoff/zcode-device-credential-spec.md §5/§6）：
+#   - 客户端凭据是每设备一份的 deviceToken（Android Keystore / 摘要入库），会话 Cookie 只有 12h，
+#     旧的单 token（ZCODE_SERVER_TOKEN / --token / ?token= Cookie）已整体删除，不做兼容。
+#   - 管理端点密钥独立存放：ZCODE_ADMIN_SECRET_FILE=<配置目录>/zcode-admin.secret
+#     （600 root:root，与任何客户端凭据不同源；服务端只在本机直连时接受，远程一律 403，
+#     nginx 侧 /api/admin/ 也显式拒绝，双保险）。密钥同样只走文件，不写进本 unit。
+# 该服务新建的文件默认 600（含 -wal/-shm、server.log 等），避免以 644 漏出去。
+UMask=0077
+# workspace 指向对话后台目录（桌面端 startupWorkspace.ts 同款语义）：server-info 宣告
+# conversation 工作区，页面打开即「不在项目中工作」草稿态；不再预置 / 项目。
+# ⚠️ ExecStart 里**不能**再带 --token（否则 /proc/<pid>/cmdline、ps aux 明文可见）。
+#    鉴权不再依赖本地补丁注入 token：凭据校验在服务端代码内（设备注册表 +
+#    x-zcode-admin 管理密钥），补丁时代随单 token 模型一并废止。
+#    <部署目录>/bin/zcode.mjs 的历史本地补丁会被 zcode 升级覆盖，升级后需重新核对。
+ExecStart=<Node 安装目录>/bin/node <部署目录>/bin/zcode.mjs --web --workspace <数据目录>/.zcode/workspace/default --host 127.0.0.1 --port 3030 --no-open
+Restart=always
+RestartSec=3
+StandardOutput=append:<数据目录>/server.log
+StandardError=append:<数据目录>/server.log
+
+[Install]
+WantedBy=multi-user.target

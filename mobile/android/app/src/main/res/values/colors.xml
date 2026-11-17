@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Two explicit shell palettes, selected at runtime from the *page* theme
+      (the ZCode web app is zai-dark by default regardless of the OS setting).
+      Values mirror the page's own tokens: zai-light brand #000000 /
+      background #f8f8f8, zai-dark brand #ffffff / background #161616.
+    -->
+    <color name="shell_light_background">#FFF8F8F8</color>
+    <color name="shell_light_surface">#FFFFFFFF</color>
+    <color name="shell_light_foreground">#FF0D0D0D</color>
+    <color name="shell_light_secondary">#FF737373</color>
+    <color name="shell_light_border">#FFE5E5E5</color>
+    <color name="shell_light_accent">#FF0D0D0D</color>
+    <color name="shell_light_on_accent">#FFFFFFFF</color>
+    <color name="shell_light_error">#FFDC2626</color>
+    <color name="shell_light_success">#FF16A34A</color>
+
+    <color name="shell_dark_background">#FF161616</color>
+    <color name="shell_dark_surface">#FF1E1E1E</color>
+    <color name="shell_dark_foreground">#FFFAFAFA</color>
+    <color name="shell_dark_secondary">#FFA3A3A3</color>
+    <color name="shell_dark_border">#FF2E2E2E</color>
+    <color name="shell_dark_accent">#FFFFFFFF</color>
+    <color name="shell_dark_on_accent">#FF161616</color>
+    <color name="shell_dark_error">#FFF87171</color>
+    <color name="shell_dark_success">#FF4ADE80</color>
+</resources>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zcode 缓存修复</title>
+<style>
+  body { background:#161616; color:#fff; font-family:system-ui,sans-serif; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; }
+  .box { text-align:center; padding:2rem; }
+  button { background:#339CFF; color:#fff; border:0; border-radius:12px; padding:14px 28px; font-size:16px; margin-top:1.5rem; }
+  .status { color:#8a8a8a; margin-top:1rem; font-size:13px; white-space:pre-line; }
+</style>
+</head>
+<body>
+<div class="box">
+  <h2 id="title">正在修复本地缓存…</h2>
+  <div class="status" id="status"></div>
+</div>
+<script>
+(async () => {
+  const status = document.getElementById('status');
+  const log = (t) => { status.textContent += t + '\n'; };
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const reg of regs) {
+        await reg.unregister();
+        log('已注销 Service Worker');
+      }
+    }
+    if (window.caches && caches.keys) {
+      const keys = await caches.keys();
+      for (const key of keys) {
+        await caches.delete(key);
+        log('已清除缓存: ' + key);
+      }
+    }
+    log('修复完成，正在返回…');
+    setTimeout(() => location.replace('/'), 800);
+  } catch (e) {
+    document.getElementById('title').textContent = '修复失败';
+    log(String(e));
+  }
+})();
+</script>
+</body>
+</html>

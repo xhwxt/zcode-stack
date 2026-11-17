@@ -1,0 +1,30 @@
+import pw from '<工作区>/ZCode/node_modules/playwright-core/index.js';
+const { chromium } = pw;
+import fs from 'fs';
+const kt = fs.readFileSync('<仓库根>/mobile/android/app/src/main/kotlin/io/github/xhwxt/zcodemobile/ThemeChannel.kt','utf8');
+const block = kt.split('const val PAGE_SIDE_JS =')[1];
+const patched = block.replace(/" \+ CONSOLE_PREFIX \+ "/g, '__zcode_shell__:');
+const parts = [...patched.matchAll(/"((?:[^"\\]|\\.)*)"/g)].map(m=>m[1]);
+const js = parts.join('');
+const token = fs.readFileSync('<数据目录>/.zcode-token','utf8').trim();
+const browser = await chromium.launch({executablePath:'<Chromium 可执行文件路径>', args:['--no-sandbox','--lang=zh-CN']});
+const ctx = await browser.newContext({viewport:{width:390,height:844}, isMobile:true, hasTouch:true});
+const page = await ctx.newPage();
+const seen = [];
+page.on('console', m => { const t = m.text(); if (t.includes('__zcode_shell__:')) seen.push(t); });
+await page.goto('https://zcode.example.com/?token='+token, {waitUntil:'domcontentloaded', timeout:60000});
+await page.waitForTimeout(10000);
+await page.evaluate((c)=>{ window.zcodeShell = undefined; try{ new Function(c)(); }catch(e){ console.log('INJECT_ERR '+e); } }, js);
+await page.waitForTimeout(3000);
+// long-press the control with no WebMessage available -> console path must carry it
+await page.evaluate(async () => {
+  const b = [...document.querySelectorAll('button')].filter(x=>/lucide-panel-left-(open|close)/.test((x.querySelector('svg')||{}).getAttribute?.('class')||''))[0];
+  const r = b.getBoundingClientRect();
+  const o = {bubbles:true,cancelable:true,clientX:r.left+r.width/2,clientY:r.top+r.height/2,pointerId:9,pointerType:'touch',isPrimary:true};
+  b.dispatchEvent(new PointerEvent('pointerdown',o));
+  await new Promise(z=>setTimeout(z,700));
+  b.dispatchEvent(new PointerEvent('pointerup',o));
+});
+await page.waitForTimeout(500);
+console.log('console messages seen:', JSON.stringify(seen.slice(0,6)));
+await browser.close();

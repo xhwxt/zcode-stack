@@ -1,0 +1,3 @@
+# 无构建依赖；node_modules 若本地临时安装过不入仓
+node_modules/
+*.log

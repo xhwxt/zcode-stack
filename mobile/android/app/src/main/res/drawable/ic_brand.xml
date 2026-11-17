@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <!-- ZCode "Z" mark (same geometry as the launcher icon), tinted in code with
+         the palette accent so it is white on the dark page and black on light. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M20,24 h24 v5 L28,42 h16 v5 L20,47 v-5 L36,29 L20,29 z" />
+</vector>

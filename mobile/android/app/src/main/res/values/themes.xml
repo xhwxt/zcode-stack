@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Follow the *system* day/night setting here (Light parent in values/,
+      dark parent in values-night/). This is not cosmetics: Android WebView
+      derives the page's `prefers-color-scheme` from the app configuration, so
+      forcing a dark base theme made the ZCode page resolve its "follow system"
+      theme as dark on a light phone. The shell's own palette is still applied
+      in code from the *page* theme (ShellPalette).
+    -->
+    <style name="Theme.ZCode" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowBackground">@color/shell_light_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>
